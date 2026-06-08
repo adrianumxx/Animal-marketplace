@@ -76,9 +76,9 @@
   },
   "home": {
     "hero": {
-      "badge": "Trusted by verified breeders",
-      "headline": "Find your perfect companion from verified breeders",
-      "subtext": "PawTrust connects you with manually verified, licensed breeders across Belgium, Luxembourg, and the Netherlands — every animal is documented, every seller is trusted.",
+      "badge": "Every breeder verified. Every animal documented.",
+      "headline": "Meet your companion — verified, documented, trusted",
+      "subtext": "PawTrust is the trusted way to find a pet in Benelux. Every breeder is licensed and verified by hand, every animal comes with its papers — so you choose with confidence, not crossed fingers.",
       "searchPlaceholder": "What pet are you looking for?",
       "locationPlaceholder": "City or region",
       "breedPlaceholder": "Any breed",
@@ -95,7 +95,7 @@
     },
     "categories": {
       "title": "Browse by species",
-      "subtitle": "Find your perfect companion from our wide selection of verified animals",
+      "subtitle": "Whatever you're looking for, start with one that's verified.",
       "dogs": "Dogs",
       "cats": "Cats",
       "rabbits": "Rabbits",
@@ -122,14 +122,14 @@
         "desc": "Health records, vaccinations, microchip, pedigree — all visible before you inquire."
       },
       "safe": {
-        "title": "Safe transactions",
-        "desc": "Secure messaging, transparent pricing, and dispute support. Your trust is our business."
+        "title": "Safe from first message to handover",
+        "desc": "Secure in-app messaging, transparent pricing, and real support if something goes wrong. Trust isn't a feature here — it's the whole product."
       }
     },
     "breeders": {
       "title": "Featured breeders",
-      "subtitle": "Trusted professionals with years of experience",
-      "cta": "Start listing for free"
+      "subtitle": "Licensed professionals, vetted by hand — not anonymous sellers.",
+      "cta": "Start selling — free"
     },
     "vets": {
       "title": "Partner vets",
@@ -159,9 +159,9 @@
       "years": "Years of trust"
     },
     "testimonials": {
-      "q1": "Found our dream puppy within days. The verification process gave us total peace of mind.",
-      "q2": "As a breeder, PawTrust helped me reach serious buyers. The platform is incredibly professional.",
-      "q3": "The health certificates and reviews made the difference. We knew exactly what we were getting."
+      "q1": "We found our puppy in days — and for the first time, every health record was right there before we even reached out. Zero guesswork.",
+      "q2": "PawTrust sends me buyers who are actually serious. Verification does the filtering, so I spend my time on real conversations.",
+      "q3": "The documents and the reviews are what sold us. We knew exactly who we were dealing with and exactly what we were getting."
     },
     "cta": {
       "listToday": "New listings added daily",
@@ -323,7 +323,7 @@
     "noAccount": "Don't have an account?",
     "signUp": "Sign up",
     "registerTitle": "Create your account",
-    "registerSubtitle": "Join thousands of pet lovers on PawTrust",
+    "registerSubtitle": "Join the trusted pet community in Benelux",
     "fullName": "Full name",
     "iWantTo": "I want to",
     "roleBuyer": "Find a pet",
@@ -341,8 +341,8 @@
     "verifyEmail": "Please check your email to verify your account"
   },
   "pricing": {
-    "title": "Simple, transparent pricing",
-    "subtitle": "Choose the plan that fits your breeding business",
+    "title": "Pricing that scales with you",
+    "subtitle": "Start free. Upgrade only when growth pays for it. No setup fees, cancel anytime.",
     "mostPopular": "Most popular",
     "starterName": "Starter",
     "starterPrice": "29",
@@ -377,7 +377,7 @@
   },
   "onboarding": {
     "title": "Become a verified seller",
-    "subtitle": "Join Belgium's most trusted pet marketplace",
+    "subtitle": "Join the most trusted pet marketplace in Benelux",
     "step1": "Your details",
     "step2": "Verification",
     "step3": "Choose plan",

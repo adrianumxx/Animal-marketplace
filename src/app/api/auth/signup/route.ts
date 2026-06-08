@@ -3,7 +3,7 @@ import { z } from "zod";
 import bcrypt from "bcryptjs";
 import { parseJson, rateLimit } from "@/lib/api-guard";
 import { connectDB } from "@/lib/mongodb";
-import { User, SellerProfile, VetProfile } from "@/lib/models";
+import { User, SellerProfile, VetProfile, ShelterProfile } from "@/lib/models";
 import { signToken, SESSION_COOKIE } from "@/lib/jwt";
 
 function slugify(value: string) {
@@ -14,7 +14,7 @@ const signupSchema = z.object({
   email: z.string().email().trim().toLowerCase(),
   password: z.string().min(8).max(256),
   full_name: z.string().trim().max(120).optional().default(""),
-  role: z.enum(["buyer", "seller", "vet"]).optional().default("buyer"),
+  role: z.enum(["buyer", "seller", "vet", "shelter"]).optional().default("buyer"),
   business_name: z.string().trim().max(160).optional().default(""),
   country: z.string().trim().min(2).max(3).optional().default("BE"),
 });
@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
     if (existing) return NextResponse.json({ error: "Email already registered" }, { status: 409 });
 
     // `role` from the form is the signup INTENT; map it to the capability model.
-    const capabilities = role === "seller" ? ["seller"] : role === "vet" ? ["vet"] : [];
+    const capabilities = role === "seller" ? ["seller"] : role === "vet" ? ["vet"] : role === "shelter" ? ["shelter"] : [];
     const password_hash = await bcrypt.hash(password, 10);
     const user = await User.create({ email, password_hash, full_name: full_name || null, role: "user", capabilities });
     const userId = String(user._id);
@@ -65,6 +65,18 @@ export async function POST(req: NextRequest) {
         slug,
         location_country: country,
         verification_status: "verified",
+      });
+    }
+
+    if (role === "shelter") {
+      await ShelterProfile.create({
+        user_id: user._id,
+        organization_name: name,
+        slug,
+        location_country: country,
+        verification_status: "verified",
+        adoption_enabled: true,
+        donation_enabled: true,
       });
     }
 

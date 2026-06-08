@@ -3,8 +3,14 @@ import { z } from "zod";
 import { parseJson } from "@/lib/api-guard";
 import { requireAuth } from "@/lib/auth";
 import { connectDB } from "@/lib/mongodb";
-import { Inquiry, Listing, SellerProfile, ShelterProfile, Message } from "@/lib/models";
+import { Inquiry, Listing, SellerProfile, ShelterProfile, VetProfile, Message } from "@/lib/models";
 import { createNotification } from "@/lib/notifications";
+
+async function profileOwner(Model: typeof SellerProfile | typeof ShelterProfile | typeof VetProfile, id: unknown): Promise<string | null> {
+  if (!id) return null;
+  const p = await Model.findById(id).select("user_id").lean<{ user_id?: unknown }>();
+  return p?.user_id ? String(p.user_id) : null;
+}
 
 function err(e: unknown) {
   const m = e instanceof Error ? e.message : "Error";
@@ -24,7 +30,11 @@ async function authorize(id: string, userId: string) {
   const inquiry = await Inquiry.findById(id).populate({ path: "listing_id", select: "title" }).lean<Record<string, unknown>>();
   if (!inquiry) return null;
   const buyerUserId = inquiry.buyer_user_id ? String(inquiry.buyer_user_id) : null;
-  const ownerUserId = await ownerUserIdOf(inquiry.listing_id && (inquiry.listing_id as Record<string, unknown>)._id);
+  let ownerUserId: string | null = null;
+  if (inquiry.listing_id) ownerUserId = await ownerUserIdOf((inquiry.listing_id as Record<string, unknown>)._id);
+  else if (inquiry.seller_id) ownerUserId = await profileOwner(SellerProfile, inquiry.seller_id);
+  else if (inquiry.shelter_id) ownerUserId = await profileOwner(ShelterProfile, inquiry.shelter_id);
+  else if (inquiry.vet_id) ownerUserId = await profileOwner(VetProfile, inquiry.vet_id);
   const isBuyer = buyerUserId === userId;
   const isOwner = ownerUserId === userId;
   if (!isBuyer && !isOwner) return null;
@@ -48,8 +58,8 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
       conversation: {
         id,
         listing_id: listing._id ? String(listing._id) : null,
-        listing_title: listing.title?.en ?? "Listing",
-        counterpart: ctx.isBuyer ? "Breeder" : (inq.buyer_name as string),
+        listing_title: listing._id ? (listing.title?.en ?? "Listing") : "Direct message",
+        counterpart: ctx.isBuyer ? "Provider" : (inq.buyer_name as string),
       },
       messages: [
         { id: "root", body: inq.message as string, mine: ctx.isBuyer, created_at: inq.created_at },

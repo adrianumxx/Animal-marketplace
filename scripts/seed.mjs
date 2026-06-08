@@ -87,6 +87,13 @@ async function run() {
     location_city: city, location_country: "BE", license_number: "VET-BE-" + Math.floor(Math.random() * 9000 + 1000),
     specializations: ["Surgery", "Dermatology"], services: ["Consultation", "Vaccination", "Surgery"],
     languages: ["fr", "nl", "en"], verification_status: "verified", accepts_new_patients: true, telemedicine: true,
+    phone: "+32 2 555 0199", website_url: `https://${slug}.be`,
+    booking_url: `https://calendly.com/${slug}/consult`,
+    opening_hours: [
+      { weekday: 1, open: "09:00", close: "18:00" }, { weekday: 2, open: "09:00", close: "18:00" },
+      { weekday: 3, open: "09:00", close: "18:00" }, { weekday: 4, open: "09:00", close: "18:00" },
+      { weekday: 5, open: "09:00", close: "17:00" }, { weekday: 6, open: "10:00", close: "13:00" },
+    ],
     rating: 0, review_count: 0,
   });
   const vMertens = vp(vet, "Clinique Mertens", "clinique-mertens", "Brussels");

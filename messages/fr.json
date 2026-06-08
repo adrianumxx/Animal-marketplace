@@ -76,9 +76,9 @@
   },
   "home": {
     "hero": {
-      "badge": "Approuvé par des éleveurs vérifiés",
-      "headline": "Trouvez votre compagnon idéal chez des éleveurs vérifiés",
-      "subtext": "PawTrust vous connecte avec des éleveurs agréés et vérifiés manuellement en Belgique, au Luxembourg et aux Pays-Bas — chaque animal est documenté, chaque vendeur est de confiance.",
+      "badge": "Chaque éleveur vérifié. Chaque animal documenté.",
+      "headline": "Rencontrez votre compagnon — vérifié, documenté, de confiance",
+      "subtext": "PawTrust, c'est la façon sûre d'adopter un animal au Benelux. Chaque éleveur est agréé et vérifié à la main, chaque animal arrive avec ses papiers — vous choisissez en confiance, pas les doigts croisés.",
       "searchPlaceholder": "Quel animal recherchez-vous ?",
       "locationPlaceholder": "Ville ou région",
       "breedPlaceholder": "Toute race",

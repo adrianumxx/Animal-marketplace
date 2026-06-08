@@ -8,8 +8,11 @@ import { api } from "@/lib/api-client";
 const ROLES = [
   { value: "buyer",  emoji: "🐾", label: "Buy an animal",  desc: "Browse verified listings and contact breeders" },
   { value: "seller", emoji: "🏅", label: "Sell animals",   desc: "List your animals as a verified breeder" },
+  { value: "shelter", emoji: "🏠", label: "Run a shelter or rescue", desc: "Rehome animals and receive adoption requests" },
   { value: "vet",    emoji: "🩺", label: "Veterinary partner", desc: "Join our veterinary partner network" },
 ];
+
+const NEEDS_BUSINESS_NAME = ["seller", "shelter", "vet"];
 
 export default function RegisterPage() {
   const params = useParams();
@@ -31,15 +34,15 @@ export default function RegisterPage() {
     try {
       const res = await api.auth.signup({
         email, password, full_name: fullName, role,
-        business_name: role === "seller" ? businessName : undefined,
+        business_name: NEEDS_BUSINESS_NAME.includes(role) ? businessName : undefined,
       });
       localStorage.setItem("pt_token", res.token);
       localStorage.setItem("pt_user", JSON.stringify({ ...res.user, seller_id: res.seller_id }));
-      if (role === "seller") {
-        router.push(`/${locale}/dashboard`);
-      } else {
-        router.push(`/${locale}`);
-      }
+      const dest = role === "seller" ? "/dashboard"
+        : role === "shelter" ? "/dashboard/shelter"
+        : role === "vet" ? "/dashboard/vet"
+        : "/account";
+      router.push(`/${locale}${dest}`);
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -125,10 +128,13 @@ export default function RegisterPage() {
               </div>
             </div>
 
-            {role === "seller" && (
+            {NEEDS_BUSINESS_NAME.includes(role) && (
               <div>
-                <label className="block text-xs font-semibold text-[rgba(232,228,221,0.50)] uppercase tracking-[0.08em] mb-2 font-[family-name:var(--font-mono)]">Business / Kennel name</label>
-                <input type="text" className="input-dark w-full" placeholder="e.g. Goldenfarm Kennel"
+                <label className="block text-xs font-semibold text-[rgba(232,228,221,0.50)] uppercase tracking-[0.08em] mb-2 font-[family-name:var(--font-mono)]">
+                  {role === "shelter" ? "Organization name" : role === "vet" ? "Clinic name" : "Business / Kennel name"}
+                </label>
+                <input type="text" className="input-dark w-full"
+                  placeholder={role === "shelter" ? "e.g. Happy Paws Rescue" : role === "vet" ? "e.g. Clinique Mertens" : "e.g. Goldenfarm Kennel"}
                   value={businessName} onChange={e => setBusinessName(e.target.value)} />
               </div>
             )}
