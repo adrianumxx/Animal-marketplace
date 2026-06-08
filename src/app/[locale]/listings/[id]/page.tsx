@@ -2,11 +2,12 @@ import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import Link from "next/link";
 import {
-  MapPin, Eye, Share2, ChevronLeft, ExternalLink, Star,
+  MapPin, Eye, ChevronLeft, ExternalLink, Star,
   MessageCircle, Shield, Syringe, Award, Heart, Clock,
   CheckCircle2, XCircle, Fingerprint, FileText, Zap,
   Users, Smile, PawPrint, ArrowRight,
 } from "lucide-react";
+import { ShareButton } from "@/components/ui/share-button";
 import { VerifiedBadge } from "@/components/ui/verified-badge";
 import { InquiryForm } from "@/components/marketplace/inquiry-form";
 import { notFound } from "next/navigation";
@@ -67,10 +68,7 @@ export default async function ListingDetailPage({ params }: ListingDetailProps) 
           </Link>
         </div>
         <div className="absolute top-[80px] right-6 z-10">
-          <button className="flex items-center gap-1.5 px-3 py-2 rounded-xl glass text-sm font-semibold text-[var(--t-text)] hover:bg-white/[0.10] transition-colors">
-            <Share2 size={14} />
-            Share
-          </button>
+          <ShareButton title={listing.title.en} />
         </div>
 
         {/* Desktop 5-photo grid */}
@@ -194,11 +192,12 @@ export default async function ListingDetailPage({ params }: ListingDetailProps) 
                   <div className="text-xs font-bold text-[rgba(232,228,221,0.30)] uppercase tracking-[0.12em] font-[family-name:var(--font-mono)] mb-3">{t("documents")}</div>
                   <div className="flex flex-wrap gap-2">
                     {listing.documents.map((doc) => (
-                      <button key={doc.name} className="flex items-center gap-2 px-3 py-2 rounded-xl border border-white/[0.08] bg-white/[0.03] hover:border-white/[0.20] hover:bg-white/[0.06] transition-all text-sm font-medium text-[rgba(232,228,221,0.65)]">
+                      <a key={doc.name} href={doc.url || undefined} target={doc.url ? "_blank" : undefined} rel="noopener noreferrer"
+                        className={`flex items-center gap-2 px-3 py-2 rounded-xl border border-white/[0.08] bg-white/[0.03] transition-all text-sm font-medium text-[rgba(232,228,221,0.65)] ${doc.url ? "hover:border-white/[0.20] hover:bg-white/[0.06]" : "opacity-50 cursor-not-allowed"}`}>
                         <FileText size={13} className="text-[rgba(232,228,221,0.40)]" />
                         {doc.name}
-                        <ExternalLink size={11} className="text-[rgba(232,228,221,0.30)]" />
-                      </button>
+                        {doc.url ? <ExternalLink size={11} className="text-[rgba(232,228,221,0.30)]" /> : null}
+                      </a>
                     ))}
                   </div>
                   <p className="text-xs text-[rgba(232,228,221,0.30)] mt-3">{t("documentsNote")}</p>

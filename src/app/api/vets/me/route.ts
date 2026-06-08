@@ -32,6 +32,8 @@ const putSchema = z.object({
   telemedicine: z.boolean().optional(),
   accepts_new_patients: z.boolean().optional(),
   avatar_url: z.string().trim().max(400).optional(),
+  booking_url: z.string().trim().max(400).optional(),
+  opening_hours: z.array(z.object({ weekday: z.number().int().min(0).max(6), open: z.string().max(5), close: z.string().max(5) })).max(14).optional(),
 });
 
 export async function PUT(req: NextRequest) {
@@ -43,7 +45,7 @@ export async function PUT(req: NextRequest) {
     const profile = await VetProfile.findOne({ user_id: user.userId });
     if (!profile) return NextResponse.json({ error: "No vet profile" }, { status: 404 });
 
-    for (const k of ["clinic_name", "location_city", "phone", "website_url", "services", "specializations", "languages", "telemedicine", "accepts_new_patients", "avatar_url"] as const) {
+    for (const k of ["clinic_name", "location_city", "phone", "website_url", "services", "specializations", "languages", "telemedicine", "accepts_new_patients", "avatar_url", "booking_url", "opening_hours"] as const) {
       if (parsed[k] !== undefined) (profile as Record<string, unknown>)[k] = parsed[k];
     }
     if (parsed.bio_en !== undefined) profile.bio = { ...(profile.bio ?? {}), en: parsed.bio_en };

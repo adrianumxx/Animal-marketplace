@@ -113,6 +113,8 @@ const vetProfileSchema = new Schema(
     avatar_url: { type: String, default: null },
     rating: { type: Number, default: 0 },
     review_count: { type: Number, default: 0 },
+    // External booking: vet pastes the link of the platform they already use
+    booking_url: { type: String, default: null }, // Calendly / Doctolib / Outlook Bookings / Google / Zoom / personal page
   },
   { timestamps: { createdAt: "created_at", updatedAt: false } }
 );
@@ -181,7 +183,11 @@ const listingSchema = new Schema(
 /* ── Inquiry / Review / Favorite ───────────────────────────── */
 const inquirySchema = new Schema(
   {
-    listing_id: { type: Types.ObjectId, ref: "Listing", required: true },
+    listing_id: { type: Types.ObjectId, ref: "Listing", default: null },
+    // Direct profile-level messages (when not tied to a specific listing)
+    seller_id: { type: Types.ObjectId, ref: "SellerProfile", default: null },
+    shelter_id: { type: Types.ObjectId, ref: "ShelterProfile", default: null },
+    vet_id: { type: Types.ObjectId, ref: "VetProfile", default: null },
     buyer_user_id: { type: Types.ObjectId, ref: "User", default: null },
     buyer_name: { type: String, required: true },
     buyer_email: { type: String, required: true },
@@ -289,6 +295,22 @@ const notificationSchema = new Schema(
 );
 notificationSchema.index({ user_id: 1, created_at: -1 });
 
+const donationSchema = new Schema(
+  {
+    shelter_id: { type: Types.ObjectId, ref: "ShelterProfile", required: true, index: true },
+    donor_user_id: { type: Types.ObjectId, ref: "User", default: null },
+    donor_name: { type: String, default: "Anonymous" },
+    donor_email: { type: String, default: null },
+    amount: { type: Number, required: true },        // gross, in cents
+    platform_fee: { type: Number, required: true },  // 5% of amount, in cents
+    net_amount: { type: Number, required: true },    // amount - platform_fee, in cents
+    message: { type: String, default: null },
+    status: { type: String, enum: ["pending", "paid", "failed", "refunded"], default: "pending" },
+  },
+  { timestamps: { createdAt: "created_at", updatedAt: false } }
+);
+donationSchema.index({ shelter_id: 1, created_at: -1 });
+
 /* ── Exports (guarded for Next.js hot reload) ──────────────── */
 export const User = models.User || model("User", userSchema);
 export const Species = models.Species || model("Species", speciesSchema);
@@ -306,5 +328,6 @@ export const SavedSearch = models.SavedSearch || model("SavedSearch", savedSearc
 export const BuyerNote = models.BuyerNote || model("BuyerNote", buyerNoteSchema);
 export const Notification = models.Notification || model("Notification", notificationSchema);
 export const Message = models.Message || model("Message", messageSchema);
+export const Donation = models.Donation || model("Donation", donationSchema);
 
 export type { mongoose };

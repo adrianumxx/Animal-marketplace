@@ -37,6 +37,8 @@ export const api = {
   },
   inquiries: {
     mine: () => request<{ inquiries: InquiryEntry[] }>("/inquiries"),
+    create: (body: { listing_id?: string; seller_id?: string; shelter_id?: string; vet_id?: string; message: string; buyer_name?: string; buyer_email?: string; buyer_phone?: string }) =>
+      request<{ success: boolean; id: string }>("/inquiries", { method: "POST", body: JSON.stringify(body) }),
   },
   memory: {
     recentlyViewed: () => request<{ recently_viewed: FavoriteEntry[] }>("/me/recently-viewed"),
@@ -52,6 +54,13 @@ export const api = {
   },
   stats: {
     get: () => request<{ listings: number; breeders: number; shelters: number; vets: number }>("/stats"),
+  },
+  cities: {
+    list: () => request<{ cities: string[] }>("/cities"),
+  },
+  donations: {
+    create: (body: { shelter_id: string; amount: number; donor_name?: string; donor_email?: string; message?: string }) =>
+      request<{ donation_id: string; amount: number; platform_fee: number; net_amount: number; payment_pending: boolean }>("/donations", { method: "POST", body: JSON.stringify(body) }),
   },
   upload: {
     image: async (file: File): Promise<{ url: string }> => {
@@ -188,6 +197,8 @@ export interface VetProfileData {
   id: string; clinic_name?: string; location_city?: string; phone?: string; website_url?: string;
   bio?: { en?: string }; services?: string[]; specializations?: string[]; languages?: string[];
   telemedicine?: boolean; accepts_new_patients?: boolean; avatar_url?: string;
+  booking_url?: string;
+  opening_hours?: { weekday: number; open: string; close: string }[];
 }
 
 export interface ConversationSummary {

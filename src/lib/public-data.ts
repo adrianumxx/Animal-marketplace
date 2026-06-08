@@ -272,6 +272,13 @@ export async function getVerifiedSellers(limit = 24) {
   }, []);
 }
 
+export async function getCities(): Promise<string[]> {
+  return safeQuery(async () => {
+    const cities = await Listing.find({ status: "active" }).distinct("location_city");
+    return (cities as string[]).filter(Boolean).sort();
+  }, []);
+}
+
 export async function getSellerBySlug(slug: string) {
   return safeQuery(async () => {
     const seller = await SellerProfile.findOne({ slug, verification_status: "verified" }).lean<JsonRecord>();

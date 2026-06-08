@@ -2,7 +2,21 @@ import { getTranslations } from "next-intl/server";
 import { MapPin, Globe, Phone, Video, UserCheck } from "lucide-react";
 import { VerifiedBadge } from "@/components/ui/verified-badge";
 import { StarRating } from "@/components/ui/star-rating";
+import { MessageButton } from "@/components/ui/message-button";
 import { getVetBySlug } from "@/lib/public-data";
+
+function bookingLabel(url: string): string {
+  try {
+    const h = new URL(url).hostname.replace("www.", "");
+    if (h.includes("calendly")) return "Book on Calendly";
+    if (h.includes("doctolib")) return "Book on Doctolib";
+    if (h.includes("zoom")) return "Book a Zoom call";
+    if (h.includes("outlook") || h.includes("office")) return "Book via Outlook";
+    if (h.includes("google")) return "Book via Google";
+    if (h.includes("cal.com")) return "Book on Cal.com";
+    return "Book a meeting";
+  } catch { return "Book a meeting"; }
+}
 
 const MOCK_VET = {
   id: "v1",
@@ -98,23 +112,53 @@ export default async function VetProfilePage({ params }: VetProfileProps) {
               </div>
             </div>
 
-            <div className="flex gap-2 shrink-0">
-              <a
-                href={`tel:${vet.phone}`}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/[0.10] text-sm font-medium text-[rgba(232,228,221,0.60)] hover:text-[var(--t-text)] hover:border-white/[0.20] hover:bg-white/[0.03] transition-all duration-200"
-              >
-                <Phone size={15} />
-                Call
-              </a>
-              <button className="px-4 py-2.5 rounded-xl bg-[var(--color-accent-teal)] hover:bg-[var(--color-accent-teal)] text-white text-sm font-bold transition-all duration-200 hover:shadow-[0_8px_24px_rgba(0,166,153,0.30)]">
-                {t("contact")}
-              </button>
+            <div className="flex flex-wrap gap-2 shrink-0">
+              <MessageButton target={{ vet_id: String((vet as { id?: string }).id ?? "") }} recipientName={vet.business_name} label="Message" className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/[0.10] text-sm font-medium text-[rgba(232,228,221,0.60)] hover:text-[var(--t-text)] hover:border-white/[0.20] hover:bg-white/[0.03] transition-all duration-200" />
+              {vet.phone ? (
+                <a href={`tel:${vet.phone}`} className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/[0.10] text-sm font-medium text-[rgba(232,228,221,0.60)] hover:text-[var(--t-text)] hover:border-white/[0.20] hover:bg-white/[0.03] transition-all duration-200">
+                  <Phone size={15} /> Call
+                </a>
+              ) : null}
+              {vet.website_url ? (
+                <a href={vet.website_url as string} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/[0.10] text-sm font-medium text-[rgba(232,228,221,0.60)] hover:text-[var(--t-text)] hover:border-white/[0.20] hover:bg-white/[0.03] transition-all duration-200">
+                  <Globe size={15} /> Website
+                </a>
+              ) : null}
+              {(vet as { booking_url?: string }).booking_url ? (
+                <a href={(vet as { booking_url?: string }).booking_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--color-accent)] text-white text-sm font-bold transition-all duration-200 hover:shadow-[0_8px_24px_rgba(255,56,92,0.30)] hover:-translate-y-0.5">
+                  <Video size={15} /> {bookingLabel((vet as { booking_url?: string }).booking_url as string)}
+                </a>
+              ) : null}
             </div>
           </div>
         </div>
       </div>
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-5">
+        {/* Opening hours */}
+        {(() => {
+          const oh = ((vet as { opening_hours?: { weekday: number; open: string; close: string }[] }).opening_hours) ?? [];
+          if (oh.length === 0) return null;
+          const DAY = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+          const byDay = new Map(oh.map((h) => [h.weekday, h]));
+          const order = [1, 2, 3, 4, 5, 6, 0];
+          return (
+            <div className="bg-[var(--t-surface)] rounded-2xl border border-white/[0.06] p-6">
+              <h2 className="font-bold text-[var(--t-text)] mb-3 font-[family-name:var(--font-display)]">Opening hours</h2>
+              <div className="divide-y divide-white/[0.05]">
+                {order.map((wd) => {
+                  const h = byDay.get(wd);
+                  return (
+                    <div key={wd} className="flex items-center justify-between py-2 text-sm">
+                      <span className="text-[var(--t-text-secondary)]">{DAY[wd]}</span>
+                      <span className={h ? "text-[var(--t-text)] font-medium font-[family-name:var(--font-mono)]" : "text-[var(--t-text-muted)]"}>{h ? `${h.open} – ${h.close}` : "Closed"}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })()}
         {/* Specializations */}
         <div className="bg-[var(--t-surface)] rounded-2xl border border-white/[0.06] p-6">
           <h2 className="font-bold text-[var(--t-text)] mb-3 font-[family-name:var(--font-display)]">{t("specializations")}</h2>

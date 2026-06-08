@@ -32,6 +32,8 @@ export default function SearchPage() {
   const [maxPrice, setMaxPrice] = useState("");
   const [verifiedOnly, setVerifiedOnly] = useState(false);
   const [pedigree, setPedigree] = useState(false);
+  const [city, setCity] = useState(searchParams.get("location") ?? "");
+  const [cities, setCities] = useState<string[]>([]);
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [listings, setListings] = useState<Listing[]>([]);
   const [total, setTotal] = useState(0);
@@ -73,6 +75,7 @@ export default function SearchPage() {
     if (maxAge)      p.max_age = parseInt(maxAge);
     if (verifiedOnly) p.verified = true;
     if (pedigree)    p.pedigree = true;
+    if (city)        p.location = city;
 
     api.listings.search(p)
       .then(r => {
@@ -84,11 +87,15 @@ export default function SearchPage() {
         setTotal(0);
       })
       .finally(() => setLoading(false));
-  }, [query, species, minPrice, maxPrice, minAge, maxAge, verifiedOnly, pedigree, listingType]);
+  }, [query, species, minPrice, maxPrice, minAge, maxAge, verifiedOnly, pedigree, listingType, city]);
 
   useEffect(() => {
     queueMicrotask(doSearch);
   }, [doSearch]);
+
+  useEffect(() => {
+    api.cities.list().then((r) => setCities(r.cities)).catch(() => {});
+  }, []);
 
   return (
     <div className="min-h-screen bg-[var(--t-bg)]">
@@ -110,12 +117,17 @@ export default function SearchPage() {
                   className="bg-transparent text-sm text-[var(--t-text)] placeholder-[rgba(232,228,221,0.35)] outline-none w-full"
                 />
               </div>
-              <div className="flex items-center gap-2 px-5 py-3 hidden sm:flex">
-                <div>
-                  <div className="text-[9px] font-bold text-[var(--color-accent)] uppercase tracking-[0.1em] font-[family-name:var(--font-mono)]">Location</div>
-                  <div className="text-sm text-[rgba(232,228,221,0.60)]">Benelux</div>
-                </div>
-              </div>
+              <label className="flex flex-col justify-center gap-0.5 px-5 py-2 hidden sm:flex min-w-[150px]">
+                <span className="text-[9px] font-bold text-[var(--color-accent)] uppercase tracking-[0.1em] font-[family-name:var(--font-mono)]">Location</span>
+                <select
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  className="bg-transparent text-sm text-[var(--t-text)] outline-none cursor-pointer -ml-0.5"
+                >
+                  <option value="">All of Benelux</option>
+                  {cities.map((c) => <option key={c} value={c}>{c}</option>)}
+                </select>
+              </label>
               <button
                 onClick={doSearch}
                 className="flex items-center px-3 py-2"

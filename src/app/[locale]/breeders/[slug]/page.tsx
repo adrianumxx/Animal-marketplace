@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { VerifiedBadge } from "@/components/ui/verified-badge";
 import { StarRating } from "@/components/ui/star-rating";
+import { MessageButton } from "@/components/ui/message-button";
 import { getSellerBySlug } from "@/lib/public-data";
 
 const MOCK_SELLER = {
@@ -122,10 +123,12 @@ export default async function SellerProfilePage({ params }: SellerProfileProps) 
                       <Phone size={15} />
                       Call
                     </a>
-                    <a href="#listings" className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-white text-sm font-bold transition-all duration-200 hover:shadow-[0_8px_24px_rgba(255,56,92,0.35)]">
-                      <MessageCircle size={15} />
-                      {t("contact")}
-                    </a>
+                    <MessageButton
+                      target={{ seller_id: String((seller as { id?: string }).id ?? "") }}
+                      recipientName={seller.business_name}
+                      label={t("contact")}
+                      className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-white text-sm font-bold transition-all duration-200 hover:shadow-[0_8px_24px_rgba(255,56,92,0.35)]"
+                    />
                   </div>
                 </div>
 
@@ -306,9 +309,12 @@ export default async function SellerProfilePage({ params }: SellerProfileProps) 
               <p className="text-xs text-[rgba(232,228,221,0.40)] mb-4">
                 Typically responds within {seller.response_time_hours} hours
               </p>
-              <a href="#listings" className="block text-center w-full py-3 bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-white font-bold rounded-xl transition-all duration-200 text-sm hover:shadow-[0_8px_24px_rgba(255,56,92,0.35)]">
-                Send message
-              </a>
+              <MessageButton
+                target={{ seller_id: String((seller as { id?: string }).id ?? "") }}
+                recipientName={seller.business_name}
+                label="Send message"
+                className="flex items-center justify-center gap-2 w-full py-3 bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-white font-bold rounded-xl transition-all duration-200 text-sm hover:shadow-[0_8px_24px_rgba(255,56,92,0.35)]"
+              />
             </div>
           </div>
         </div>
