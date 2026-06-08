@@ -1,0 +1,1 @@
+(function(){try{var t=localStorage.getItem('pawtrust-theme');document.documentElement.setAttribute('data-theme',t==='light'?'light':'dark');}catch{document.documentElement.setAttribute('data-theme','dark');}})();
